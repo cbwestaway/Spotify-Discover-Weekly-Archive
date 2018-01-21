@@ -1,0 +1,105 @@
+*{
+		background: #222326;
+}
+/*
+html, body {
+   margin: 0px;
+   height: 100%;
+   width: 100%;
+}
+*/
+html{
+	overflow: hidden;
+}
+.container{
+	*display: flex;
+	width: 100%;
+}
+
+.header{
+	width: 100%;
+	color: white;
+	margin: 50px auto;
+	font-size: 26px;
+	text-align: center;
+}
+
+img{
+	border: 2px solid white;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 15px auto 0 auto;
+    display: block;
+}
+.optionBtns{
+	display: flex;
+	flex-direction: column;
+	width: 25%;
+	margin: 0 auto;
+}
+
+#pickyBtn{
+	margin-top: 20px;
+}
+
+.messageBox
+{
+	margin: auto;
+	width: 100%;
+	text-align: center;
+	color: white;
+}
+
+.vanish{
+	display: none;
+}
+
+.button{
+	color: white;
+	font-weight: bold;
+	background: green;
+	border: 1px solid green;
+	padding: 10px;
+	border-radius: 15px;
+	outline: none;
+	cursor: pointer;
+	text-align: center;
+    text-decoration: none;
+}
+
+table{
+	width: 100%;
+	border-spacing: 0;
+	margin: 0 auto;
+	color: white;
+	height: -webkit-fill-available;
+    *border: 1px solid white;
+}
+
+tbody{
+	overflow-y: auto;
+}
+
+thead, tbody{
+ *display: block;
+ width: 100%; 
+}
+
+th, td{
+	text-align: center;
+	padding: 10px;
+	border: 1px solid white;
+}
+
+td.selectable{
+	padding: 5px;
+	border-width: 2px 4px;
+	border-style: solid;
+	border-color: green;
+	background: grey;
+}
+
+.selectable input{
+	visibility: hidden;
+}
+
