@@ -1,15 +1,9 @@
 *{
 		background: #222326;
 }
-/*
-html, body {
-   margin: 0px;
-   height: 100%;
-   width: 100%;
-}
-*/
+
 html{
-	overflow: hidden;
+	*overflow: hidden;
 }
 .container{
 	*display: flex;
@@ -103,3 +97,14 @@ td.selectable{
 	visibility: hidden;
 }
 
+@media only screen and (max-width:500px) {
+	.optionBtns{
+		width: 100%;
+	}
+}
+
+@media only screen and (min-width:600px) and (max-width:1400px) {
+	.optionBtns{
+		width: 60%;
+	}
+}
