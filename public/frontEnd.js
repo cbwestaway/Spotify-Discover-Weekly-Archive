@@ -1,5 +1,6 @@
 
  var user = {};
+ var spotify = {};
 
 //  Obtains parameters from the hash of the URL
 // @return Object
@@ -13,69 +14,44 @@ function getHashParams() {
     return hashParams;
 }
 
- (function() {
-        var params = getHashParams();
-        var access_token = params.access_token,
-            refresh_token = params.refresh_token,
-            error = params.error;
-        if (error) {
-          alert('There was an error during the authentication');
-        } else {
-          var getUser = function(){
-            var getUserPromise = new Promise(function(resolve, reject){
+function spotifyAPI ()
+{
+	//  Obtains parameters from the hash of the URL
+	// @return Object
+	 (function () {
+  		var hashParams = {};
+  		var e, r = /([^&;=]+)=?([^&;]*)/g,
+  		q = window.location.hash.substring(1);
+  		while ( e = r.exec(q)) {
+      		hashParams[e[1]] = decodeURIComponent(e[2]);
+  		}
+
+        this.access_token = hashParams.access_token,
+        this.refresh_token = hashParams.refresh_token,
+        this.error = hashParams.error;
+	})();
+
+	spotifyAPI.prototype.getUser = function(){
+		return new Promise(function(resolve, reject){
                 $.ajax({
                       url: 'https://api.spotify.com/v1/me',
                       headers: {
-                        'Authorization': 'Bearer ' + access_token
+                        'Authorization': 'Bearer ' + this.access_token
                       },
                       success: function(userData) {
                         resolve(userData);
                       }
                     });
               });
-                return getUserPromise;
-                }
-        getUser().then(function(userData){
-           user = userData;
-           $('img').attr('src', user.images[0].url)
-        });
-      }   
-      var body = $('body');
-      init_bindings(body);
-      })();
-      
-function init_bindings(body)
-{
- body.on('click', '#archiveAllBtn', function(){
-        // Show the loading message
-        $('.optionBtns').addClass('vanish');
-        $('.messageBox .loading').removeClass('vanish')
-        //  Obtains parameters from the hash of the URL
-        // @return Object
-      /*  function getHashParams() {
-          var hashParams = {};
-          var e, r = /([^&;=]+)=?([^&;]*)/g,
-              q = window.location.hash.substring(1);
-          while ( e = r.exec(q)) {
-             hashParams[e[1]] = decodeURIComponent(e[2]);
-          }
-          return hashParams;
-        } */
-        var params = getHashParams();
-        var access_token = params.access_token,
-            refresh_token = params.refresh_token,
-            error = params.error;
-        if (error) {
-          alert('There was an error during the authentication');
-        } else { 
-          if (access_token) {
-            // render oauth info
-            var get_DiscoverWeekly = new Promise(function(resolve,reject)
+	}
+
+	spotifyAPI.prototype.get_DiscoverWeekly = function(){
+		return new Promise(function(resolve,reject)
             {
               $.ajax({
                   url: 'https://api.spotify.com/v1/me/playlists',
                   headers: {
-                    'Authorization': 'Bearer ' + access_token
+                    'Authorization': 'Bearer ' + this.access_token
                   },
                   success: function(response) {
                   response.items.forEach(function(item){
@@ -89,30 +65,34 @@ function init_bindings(body)
                 }
               });
             });
-            var getDiscoverTracks = function(playlist_id){
-              var tracksPromise = new Promise(function(resolve, reject){
+	}
+	 
+
+	spotifyAPI.prototype.get_DiscoverTracks = function(playlist_id){
+		return new Promise(function(resolve, reject){
                   $.ajax({
                     url: 'https://api.spotify.com/v1/users/spotify/playlists/'+ playlist_id + '/tracks?offset=0&limit=100',
                     headers: {
-                      'Authorization': 'Bearer ' + access_token
+                      'Authorization': 'Bearer ' + this.access_token
                     },
                     success: function(tracks) {
-                      var playListUpdate = [];
-                      tracks.items.forEach(function(item){
-                          playListUpdate.push("spotify:track:" + item.track.id);
-                      });
-                      resolve(playListUpdate);
+       
+                      		var playListUpdate = [];
+                      		tracks.items.forEach(function(item){
+                          	playListUpdate.push("spotify:track:" + item.track.id);
+                      	});
+                      	resolve(playListUpdate);
                     }
                   });
                })
-              return tracksPromise;
-            }
-            var getArchivePlaylist = function(playListUpdate){
-                var findArchivePromise = new Promise(function(resolve, reject){
+	}
+
+	spotifyAPI.prototype.get_ArchivePlaylist = function(playListUpdate){
+		return new Promise(function(resolve, reject){
                       $.ajax({
                         url: 'https://api.spotify.com/v1/me/playlists',
                         headers: {
-                        'Authorization': 'Bearer ' + access_token
+                        'Authorization': 'Bearer ' + this.access_token
                         // 'uris': {'uris': playListUpdate, 'position': 0}
                         },
                       success: function(playlists) {
@@ -129,14 +109,14 @@ function init_bindings(body)
                       }
                     });
                 })
-             return findArchivePromise;   
-            }
-             var getLastUpdated = function(data){
-                var findLastUpdatedPromise = new Promise(function(resolve, reject){
+	}
+
+	spotifyAPI.prototype.get_LastUpdated = function(data){
+		return new Promise(function(resolve, reject){
                       $.ajax({
                         url: 'https://api.spotify.com/v1/users/' + user.id + '/playlists/' + data.dest_id + '/tracks?offset=0&limit=1',
                         headers: {
-                        'Authorization': 'Bearer ' + access_token
+                        'Authorization': 'Bearer ' + this.access_token
                         },
                       success: function(tracks) {
                         tracks.items.forEach(function(item){
@@ -151,15 +131,35 @@ function init_bindings(body)
                         })
                       }
                     });
-                })
-             return findLastUpdatedPromise;   
-            }
-            get_DiscoverWeekly
-            .then(getDiscoverTracks)
-            .then(getArchivePlaylist)
-            .then(getLastUpdated)
+                });
+	}
+
+	spotifyAPI.prototype.init = function(){
+        if (this.error) {
+          alert('There was an error during the authentication');
+        } else {
+        	console.log(this);
+         this.getUser().then(function(userData){
+           user = userData;
+           $('img').attr('src', user.images[0].url)
+        });
+      }   
+      var body = $('body');
+      init_bindings(body);
+	}
+
+	spotifyAPI.prototype.archiveAll = function(){
+        if (error) {
+          alert('There was an error during the authentication');
+        } else { 
+          if (access_token) {
+            // render oauth info
+            this.get_DiscoverWeekly()
+            .then(this.get_DiscoverTracks)
+            .then(this.get_ArchivePlaylist)
+            .then(this.get_LastUpdated)
            .then(function(data){
-             /* var uris = {"uris": data.tracks, "position": 0};
+              var uris = {"uris": data.tracks, "position": 0};
               var body = JSON.stringify(uris);
               console.log(body);
                       $.ajax({
@@ -172,7 +172,7 @@ function init_bindings(body)
                         data: body,
                       success: function(ressponse) {
                       }
-                    }); */
+                    }); 
                     console.log('songs added');
                     $('.messageBox .loading').addClass('vanish');
                     $('.messageBox .complete').removeClass('vanish')
@@ -190,11 +190,55 @@ function init_bindings(body)
              
             });
         }
+	}
+
+
+	spotifyAPI.prototype.pickySelect = function(wholeObject){
+        if (error) {
+          alert('There was an error during the authentication');
+        } else { 
+          if (access_token) {
+            // render oauth info
+            this.get_DiscoverWeekly()
+            .then(this.get_DiscoverTracks)
+            .then(buildSongsGrid);
+          } else {
+              console.log('toobad');
+          }
+            $.ajax({
+              url: '/refresh_token',
+              data: {
+                'refresh_token': refresh_token
+              }
+            }).done(function(data) {
+              access_token = data.access_token;
+             
+            });
+        }
+	}
+
+	this.init();
+
+}
+
+(function(){
+	spotify = new spotifyAPI();
+})();
+      
+function init_bindings(body)
+{
+ body.on('click', '#archiveAllBtn', function(){
+
+ 		spotify.archiveAll();
+        // Show the loading message
+        $('.optionBtns').addClass('vanish');
+        $('.messageBox .loading').removeClass('vanish')
+        
     });
     
   body.on('click', '#pickyBtn', function(){
     $('.container.main').addClass('vanish');
     $('.container.picky').removeClass('vanish');
-    getTracks();
+    spotify.pickySelect(true);
   });
 }
